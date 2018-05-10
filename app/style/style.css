@@ -1,0 +1,23 @@
+#main {
+	position: absolute;
+	left: 0;
+	top: 50px;
+	right: 0;
+	bottom: 0;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 15%;
+	padding-right: 15%;
+}
+
+#chat-text-row {
+	height: 70%;
+}
+
+#comment-row {
+	height: 30%;
+}
+
+#toolbar {
+	padding-right: 50px;
+}

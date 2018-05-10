@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" ng-app="nlpTool">
+  <head>
+    <meta charset="utf-8">
+    <title>NLP Tool</title>
+
+    <!-- vendor stylesheets -->
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
+
+    <!-- vendor modules -->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+
+    <!-- root modules -->
+    <script src="app.module.js"></script>
+    <script src="app.config.js"></script>
+
+    <!-- core modules -->
+    <script src="core/core.module.js"></script>
+    <script src="core/userauth/userauth.module.js"></script>
+    <script src="core/userauth/userauth.service.js"></script>
+    <script src="core/navbar/navbar.module.js"></script>
+    <script src="core/navbar/navbar.component.js"></script>
+    <script src="core/toolbar/toolbar.module.js"></script>
+    <script src="core/toolbar/toolbar.component.js"></script>
+
+    <!-- login modules -->
+    <script src="login/login.module.js"></script>
+    <script src="login/login.component.js"></script>
+
+    <!-- nlp-main-page modules -->
+    <script src="nlp-main-page/nlp-main-page.module.js"></script>
+    <script src="nlp-main-page/nlp-main-page.component.js"></script>
+
+    <!-- attribute-view modules -->
+    <script src="attribute-view/attribute-view.module.js"></script>
+    <script src="attribute-view/attribute-view.component.js"></script>
+
+  </head>
+  <body>
+  	
+    <div class="view-container">
+      <div ng-view class="view-frame"></div>
+    </div>
+  </body>
+</html>

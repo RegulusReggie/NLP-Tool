@@ -1,0 +1,23 @@
+<app-navbar></app-navbar>
+<div class="container-fluid" id="main">
+	<!-- it's ugly -->
+	<link rel="stylesheet" href="style/style.css">
+	<div class="row">
+		<div class="col-md-8">
+			<div class="row" id="chat-text-row">
+				<app-toolbar></app-toolbar>
+				<span ng-repeat="entity in $ctrl.entityList" ng-click="$ctrl.selectedEntity = entity">{{entity.text}}</span>
+			</div>
+			<div class="row" id="comment-row">
+				<h2>Comments:</h4>
+				<form>
+					<textarea rows="4" cols="50" ng-model="$ctrl.comments" ></textarea>
+				</form>
+				{{$ctrl.comments}}
+			</div>
+		</div>
+		<div class="col-md-4">
+			<attribute-view entity="$ctrl.selectedEntity" on-update="$ctrl.updateEntity(entity, attr, value)"></attribute-view>
+		</div>
+	</div>
+</div>
