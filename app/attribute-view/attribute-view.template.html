@@ -7,8 +7,12 @@
 			<button class="btn btn-primary">Indep Anno</button>
 		</div>
 	</div>
-	<div class="row">
-		<button class="btn btn-primary" ng-click="$ctrl.update('type1', 'good')">{{$ctrl.entity.text}}</button>
+	<div class="row" ng-class="$ctrl.isHidden()">
+		<div class="btn-group" ng-repeat="(lvl, lvlAttrs) in $ctrl.attrMap">
+			<span>{{lvl}}</span>
+			<br/>
+			<button ng-repeat="(buttonValue, buttonText) in lvlAttrs" class="btn btn-default" ng-class="$ctrl.isActiveButton(lvl, buttonValue)" ng-click="$ctrl.update($event, lvl, buttonValue)">{{buttonText}}</button>
+		</div>
 	</div>
 	<div class="row">
 		<div class="row">

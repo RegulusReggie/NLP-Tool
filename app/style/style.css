@@ -21,3 +21,8 @@
 #toolbar {
 	padding-right: 50px;
 }
+
+.btn-group .active, .btn-group .btn:hover {
+	background-color: yellow;
+	color: white;
+}
