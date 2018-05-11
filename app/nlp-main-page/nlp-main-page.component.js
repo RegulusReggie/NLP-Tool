@@ -1,24 +1,44 @@
 // Register 'nlp-main-page' component
 function NlpMainPageController() {
 	var self = this;
-	self.entityList = [
+	self.dialog = [
 		{
-			text: 'Some Text',
-			attributes: {}
+			speaker: '医生',
+			entities: [
+				{
+					text: '我是一句非常长的话你要好好对我。',
+					attributes: {}
+				}
+			],
+			show: true
 		},
 		{
-			text: 'Some More Text',
-			attributes: {}
+			speaker: '患者',
+			entities: [
+				{
+					text: '为什么你是一句很长的话呢，我看不懂。',
+					attributes: {}
+				}
+			],
+			show: true
 		},
 		{
-			text: 'Some Final Text',
-			attributes: {}
+			speaker: '医生',
+			entities: [
+				{
+					text: '看不懂就对了因为我是医生，我写的字都很长。',
+					attributes: {}
+				}
+			],
+			show: true
 		}
 	]
 	self.updateEntity = function(entity, attr, value) {
 		entity.attributes[attr] = value
-		console.log(entity)
-		console.log(self.entityList)
+	}
+	self.selectEntity = function(entity) {
+		if (self.toolState != 'select-word') return;
+		self.selectedEntity = entity
 	}
 }
 

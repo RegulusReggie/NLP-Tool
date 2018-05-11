@@ -26,3 +26,23 @@
 	background-color: yellow;
 	color: white;
 }
+
+/*dialog table style*/
+#dialog-table {
+	padding: 20px 20px 20px 20px;
+	width: 100%;
+	border: 2px solid;
+	border-radius: 10px;
+}
+
+.dialog-row {
+	width: 100%;
+}
+
+.even-row {
+	background-color: #C0C0C0;
+}
+
+.odd-row {
+	background-color: #808080;
+}

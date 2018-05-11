@@ -20,17 +20,11 @@ const attrMap = {
 	}
 }
 
-function AttributeViewController() {
+function AttributeViewController(setActiveBtnInBtnGroup) {
 	var self = this;
 	self.attrMap = attrMap;
 	self.update = function($event, attr, value) {
-		var thisButton = $event.currentTarget;
-		var current = thisButton.parentNode.getElementsByClassName("active");
-		if (current.length > 0) {
-			current[0].className = current[0].className.replace(" active", "");	
-		}
-		
-		thisButton.className += " active";
+		setActiveBtnInBtnGroup($event.currentTarget);
 		self.onUpdate({entity: self.entity, attr: attr, value: value});
 	}
 	self.isActiveButton = function(attr, value) {
@@ -52,7 +46,7 @@ angular.
 	module('attributeView').
 	component('attributeView', {
 		templateUrl: 'attribute-view/attribute-view.template.html',
-		controller: AttributeViewController,
+		controller: ['setActiveBtnInBtnGroup', AttributeViewController],
 		bindings: {
 			entity: '<',
 			onUpdate: '&'

@@ -3,9 +3,6 @@
 		Progress:<span id="progress" class="label label-info"></span>
 	</h4>
 	<div class="pull-right toolbar-btn-group btn-group" role="group">
-		<button class="btn btn-default">A</button>
-		<button class="btn btn-default">B</button>
-		<button class="btn btn-default">C</button>
-		<button class="btn btn-default">D</button>
+		<button ng-repeat="(toolKey, toolValue) in $ctrl.toolMap" class="btn btn-default" ng-click="$ctrl.changeTool($event, toolKey)">{{toolValue}}</button>
 	</div>
 </div>
