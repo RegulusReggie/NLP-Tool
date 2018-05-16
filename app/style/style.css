@@ -46,3 +46,15 @@
 .odd-row {
 	background-color: #808080;
 }
+
+#dialog-table .disease-entity {
+	background-color: yellow;
+}
+
+#dialog-table .cure-entity {
+	background-color: green;
+}
+
+#dialog-table .env-entity {
+	background-color: blue;
+}

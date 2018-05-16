@@ -11,11 +11,9 @@
 					<tr class="dialog-row" ng-repeat="sentence in $ctrl.dialog" ng-class="$even ? 'even-row' : 'odd-row'">
 						<td>
 							<span ng-click="sentence.show = !sentence.show" style="cursor: pointer">{{sentence.speaker}} <i class="fa fa-caret-down"></i></span>
-							<div ng-class="sentence.show ? '' : 'hidden'">
-								/
-								<span ng-repeat="entity in sentence.entities" ng-click="$ctrl.selectEntity(entity)">{{entity.text}}
-								</span>
-								/
+							<div ng-class="sentence.show ? '' : 'hidden'" ng-mouseup="$ctrl.annotateEntity($index)">
+								<span entity-idx="-1">/</span><!-- to fight against whitespace 
+								--><span ng-repeat="entity in sentence.entities" ng-click="$ctrl.selectEntity(entity)" entity-idx="{{$index}}" ng-class="{'disease-entity': entity.attributes.attr_level1 == 1, 'cure-entity': entity.attributes.attr_level1 == 2, 'env-entity': entity.attributes.attr_level1 == 3}">{{sentence.text.substring(entity.start, entity.end)}}/</span>
 							</div>
 						</td>
 					</tr>

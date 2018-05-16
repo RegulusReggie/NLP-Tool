@@ -11,8 +11,14 @@ function ToolbarController(setActiveBtnInBtnGroup) {
 	var self = this;
 	self.toolMap = toolMap
 	self.changeTool = function($event, toolKey) {
-		setActiveBtnInBtnGroup($event.currentTarget);
-		self.onUpdate({toolState: toolKey});
+		var btnElement = $event.currentTarget
+		if (btnElement.classList.contains("active")) {
+			btnElement.className = btnElement.className.replace(" active", "");
+			self.onUpdate({toolState: "empty"});
+		} else {
+			setActiveBtnInBtnGroup(btnElement);	
+			self.onUpdate({toolState: toolKey});
+		}
 	};
 }
 

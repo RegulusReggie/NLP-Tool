@@ -16,7 +16,7 @@ coreModule.factory('setActiveBtnInBtnGroup', function() {
 		return function(btnElement) {
 			var current = btnElement.parentNode.getElementsByClassName("active");
 			if (current.length > 0) {
-				current[0].className = current[0].className.replace(" active", "");	
+				current[0].className = current[0].className.replace(" active", "");
 			}
 			btnElement.className += " active";	
 		};
