@@ -1,15 +1,12 @@
 // Register 'toolbar' component
 const toolMap = {
-	'delete': '<i class="fa fa-trash"></i>',
 	'annotate-word': 'AW',
-	'select-word': 'SW',
-	'annotate-sentence': 'AS',
-	'default': 'D'
+	'select-word': 'SW'
 }
 
 function ToolbarController(setActiveBtnInBtnGroup) {
 	var self = this;
-	self.toolMap = toolMap
+	self.toolMap = toolMap;
 	self.changeTool = function($event, toolKey) {
 		var btnElement = $event.currentTarget
 		if (btnElement.classList.contains("active")) {
@@ -20,6 +17,9 @@ function ToolbarController(setActiveBtnInBtnGroup) {
 			self.onUpdate({toolState: toolKey});
 		}
 	};
+	self.delete = function() {
+		self.onDelete();
+	}
 }
 
 angular.
@@ -28,6 +28,7 @@ angular.
 		templateUrl: 'core/toolbar/toolbar.template.html',
 		controller: ['setActiveBtnInBtnGroup', ToolbarController],
 		bindings: {
-			onUpdate: '&'
+			onUpdate: '&',
+			onDelete: '&'
 		}
 	})

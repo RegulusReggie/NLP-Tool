@@ -2,12 +2,20 @@
 function NlpMainPageController() {
 	var self = this;
 	self.dialog = getDialog()
+	self.changeToolState = function(toolState) {
+		self.toolState = toolState;
+		if (toolState == 'empty') {
+			self.selectedEntity = null;
+			self.selectedEntitySentenceIdx = -1;
+		}
+	}
 	self.updateEntity = function(entity, attr, value) {
 		entity.attributes[attr] = value;
 	}
-	self.selectEntity = function(entity) {
+	self.selectEntity = function(entity, sentenceIdx) {
 		if (self.toolState != 'select-word') return;
 		self.selectedEntity = entity;
+		self.selectedEntitySentenceIdx = sentenceIdx;
 	}
 	self.annotateEntity = function(sentenceIdx) {
 		if (self.toolState != 'annotate-word') return;
@@ -22,28 +30,18 @@ function NlpMainPageController() {
 			var startOffset = range.startOffset;
 			var endOffset = range.endOffset;
 			/* preprocess */
-			// no actual text from dialog is selected.
-			if ((startEntityIdx == entities.length - 1
-			  && startOffset == getEntityLength(entities[startEntityIdx]))
-			  || endEntityIdx == -1)
-				return;
-			// If selection starts from the very beginning,
-			// it's the same as it starts from the 0 offset of 1st entity.
-			if (startEntityIdx == -1) {
-				startEntityIdx = 1;
-				startOffset = 0;
+			// process end delimiter only because we have (delimiter_i, text_i) structure 
+			// selection ends at the right side of the delimiter
+			if (range.endContainer.parentElement.hasAttribute('delimiter')) {
+				if (endOffset == 1) {
+					endEntityIdx -= 1;
+					// the selection ends on the first delimit: nothing selected
+					if (endEntityIdx < 0) return;
+					endOffset = entities[endEntityIdx].end - entities[endEntityIdx].start;
+				}
 			}
-			// If selection starts from the very end of the entity except the last entity,
-			// it's the same as it starts from the beginning of next entity.
-			if (startOffset == getEntityLength(entities[startEntityIdx])) {
-				startEntityIdx += 1;
-				startOffset = 0;
-			}
-			// If the selection passes the end of a entity and reaches the very beginning
-			// of the next entity, set it to the end of that entity.
-			if (endOffset > getEntityLength(entities[endEntityIdx])) {
-				endOffset = getEntityLength(entities[endEntityIdx]);
-			}
+			// selection starts from the last delimiter
+			if (startEntityIdx == entities.length) return;
 
 			/* generate new entities */
 			var insertIdx = startEntityIdx;
@@ -75,6 +73,25 @@ function NlpMainPageController() {
 			for (var i = newEntities.length - 1; i >= 0; i--)
 				entities.splice(insertIdx, 0, newEntities[i]);
 			self.selectedEntity = newSelectedEntity;
+		}
+	}
+	self.deleteSelectedEntity = function() {
+		if (self.selectedEntity && self.selectedEntitySentenceIdx != -1) {
+			var entities = self.dialog[self.selectedEntitySentenceIdx].entities;
+			var selEntityIdx = entities.indexOf(self.selectedEntity);
+			if (selEntityIdx == -1) return;
+			if (selEntityIdx > 0) {
+				self.selectedEntity.start = entities[selEntityIdx - 1].start;
+				entities.splice(selEntityIdx - 1, 1);
+				selEntityIdx -= 1;
+			}
+			if (selEntityIdx < entities.length - 1) {
+				self.selectedEntity.end = entities[selEntityIdx + 1].end;
+				entities.splice(selEntityIdx + 1, 1);
+			}
+			self.selectedEntity.attributes = {};
+			self.selectedEntity = null;
+			self.selectedEntitySentenceIdx = -1;
 		}
 	}
 }
@@ -137,10 +154,15 @@ function getDialog() {
 // end
 
 function isValidSelection(sel) {
-	return !sel.isCollapsed 
-		 && sel.anchorNode.nodeType == Node.TEXT_NODE
-		 && sel.focusNode.nodeType == Node.TEXT_NODE
-		 && sel.rangeCount;
+	var anchorParentEle = sel.anchorNode.parentElement;
+	var focusParentEle = sel.focusNode.parentElement;
+	return !sel.isCollapsed
+		 && sel.rangeCount
+		 && anchorParentEle.tagName.toLowerCase() == "span"
+		 && anchorParentEle.hasAttribute('entity-idx')
+		 && focusParentEle.tagName.toLowerCase() == "span"
+		 && focusParentEle.hasAttribute('entity-idx')
+		 && anchorParentEle.parentElement === focusParentEle.parentElement;
 }
 
 function getEntityLength(entity) {

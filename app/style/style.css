@@ -58,3 +58,7 @@
 #dialog-table .env-entity {
 	background-color: blue;
 }
+
+#dialog-table .selected {
+	color: white;
+}

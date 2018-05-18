@@ -5,15 +5,15 @@
 	<div class="row">
 		<div class="col-md-8">
 			<div class="row" id="chat-text-row">
-				<app-toolbar on-update="$ctrl.toolState = toolState"></app-toolbar>
+				<app-toolbar on-update="$ctrl.changeToolState(toolState)" on-delete="$ctrl.deleteSelectedEntity()"></app-toolbar>
 				<table id="dialog-table">
 					<thead></thead>
 					<tr class="dialog-row" ng-repeat="sentence in $ctrl.dialog" ng-class="$even ? 'even-row' : 'odd-row'">
 						<td>
 							<span ng-click="sentence.show = !sentence.show" style="cursor: pointer">{{sentence.speaker}} <i class="fa fa-caret-down"></i></span>
-							<div ng-class="sentence.show ? '' : 'hidden'" ng-mouseup="$ctrl.annotateEntity($index)">
-								<span entity-idx="-1">/</span><!-- to fight against whitespace 
-								--><span ng-repeat="entity in sentence.entities" ng-click="$ctrl.selectEntity(entity)" entity-idx="{{$index}}" ng-class="{'disease-entity': entity.attributes.attr_level1 == 1, 'cure-entity': entity.attributes.attr_level1 == 2, 'env-entity': entity.attributes.attr_level1 == 3}">{{sentence.text.substring(entity.start, entity.end)}}/</span>
+							<div ng-class="sentence.show ? '' : 'hidden'" ng-mouseup="$ctrl.annotateEntity($index)"><!--
+									to fight against whitespace
+								--><span ng-repeat-start="entity in sentence.entities" entity-idx="{{$index}}" delimiter>/</span><span ng-repeat-end ng-click="$ctrl.selectEntity(entity, $parent.$index)" entity-idx="{{$index}}" ng-class="{'disease-entity': entity.attributes.attr_level1 == 1, 'cure-entity': entity.attributes.attr_level1 == 2, 'env-entity': entity.attributes.attr_level1 == 3, 'selected': $ctrl.selectedEntity == entity}">{{sentence.text.substring(entity.start, entity.end)}}</span><span entity-idx="{{sentence.entities.length}}" delimiter>/</span>
 							</div>
 						</td>
 					</tr>
