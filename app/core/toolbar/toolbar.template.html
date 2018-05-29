@@ -1,8 +1,10 @@
 <div id="toolbar" class="btn-toolbar">
-	<h4>
-		Progress:<span id="progress" class="label label-info"></span>
-	</h4>
-	<div class="pull-right toolbar-btn-group btn-group" role="group">
+	<div style="padding: 15px 0; float: left;">
+		<span>
+			完成进度:<span id="progress" class="label label-info">1/100</span>
+		</span>
+	</div>
+	<div class="pull-right toolbar-btn-group btn-group" style="padding: 8px 0" role="group">
 		<button class="btn btn-default" ng-click="$ctrl.delete()"><i class="fa fa-trash"></i></button>
 		<button ng-repeat="(toolKey, toolValue) in $ctrl.toolMap" class="btn btn-default" ng-click="$ctrl.changeTool($event, toolKey)">{{toolValue}}</button>
 	</div>

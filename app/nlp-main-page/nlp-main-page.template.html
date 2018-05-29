@@ -1,34 +1,57 @@
 <app-navbar></app-navbar>
 <div class="container-fluid" id="main">
-	<!-- it's ugly -->
-	<link rel="stylesheet" href="style/style.css">
 	<div class="row">
-		<div class="col-md-8">
+		<div class="col-md-8 fix-height-div">
 			<div class="row" id="chat-text-row">
-				<app-toolbar on-update="$ctrl.changeToolState(toolState)" on-delete="$ctrl.deleteSelectedEntity()"></app-toolbar>
+				<app-toolbar mode="$ctrl.mode" on-update="$ctrl.changeToolState(toolState)" on-delete="$ctrl.delete()"></app-toolbar>
 				<table id="dialog-table">
 					<thead></thead>
-					<tr class="dialog-row" ng-repeat="sentence in $ctrl.dialog" ng-class="$even ? 'even-row' : 'odd-row'">
+					<tr class="dialog-row" ng-repeat="chatText in $ctrl.dialog" ng-class="$even ? 'even-row' : 'odd-row'">
 						<td>
-							<span ng-click="sentence.show = !sentence.show" style="cursor: pointer">{{sentence.speaker}} <i class="fa fa-caret-down"></i></span>
-							<div ng-class="sentence.show ? '' : 'hidden'" ng-mouseup="$ctrl.annotateEntity($index)"><!--
+							<span ng-click="chatText.show = !chatText.show" style="cursor: pointer">{{chatText.speaker}} <i class="fa fa-caret-down"></i></span>
+							<div>
+								<div ng-class="chatText.show ? '' : 'hidden'" ng-mouseup="$ctrl.annotate($index)"><!--
 									to fight against whitespace
-								--><span ng-repeat-start="entity in sentence.entities" entity-idx="{{$index}}" delimiter>/</span><span ng-repeat-end ng-click="$ctrl.selectEntity(entity, $parent.$index)" entity-idx="{{$index}}" ng-class="{'disease-entity': entity.attributes.attr_level1 == 1, 'cure-entity': entity.attributes.attr_level1 == 2, 'env-entity': entity.attributes.attr_level1 == 3, 'selected': $ctrl.selectedEntity == entity}">{{sentence.text.substring(entity.start, entity.end)}}</span><span entity-idx="{{sentence.entities.length}}" delimiter>/</span>
+								--><span ng-repeat-start="entity in chatText[$ctrl.mode].entities"
+												 entity-idx="{{$index}}"
+											 	 delimiter>{{$ctrl.delimiterMap[$ctrl.mode]}}</span><span 
+												 ng-repeat-end
+												 ng-click="$ctrl.selectEntity(entity, $parent.$index)"
+												 entity-idx="{{$index}}"
+												 ng-class="{
+													'disease-entity': entity.attributes.attr_level1 == 1,
+													'cure-entity': entity.attributes.attr_level1 == 2,
+													'env-entity': entity.attributes.attr_level1 == 3,
+													'question-sentence': entity.attributes.logic_type == 1,
+													'affirmative-sentence': entity.attributes.logic_type == 2,
+													'negative-sentence': entity.attributes.logic_type == 3,
+													'selected': $ctrl.selectedEntity == entity}"
+													>{{chatText[$ctrl.mode].text.substring(entity.start, entity.end)}}</span><span
+												 entity-idx="{{chatText[$ctrl.mode].entities.length}}"
+												 delimiter>{{$ctrl.delimiterMap[$ctrl.mode]}}</span>
+								</div>
 							</div>
 						</td>
 					</tr>
 				</table>
 			</div>
-			<div class="row" id="comment-row">
-				<h2>Comments:</h4>
-				<form>
-					<textarea rows="4" cols="50" ng-model="$ctrl.comments" ></textarea>
-				</form>
-				{{$ctrl.comments}}
+			<div class="row" id="case-row">
+					<case-view case="$ctrl.case" on-update-case="$ctrl.updateCase(attr, value)">
+					</case-view>
 			</div>
 		</div>
-		<div class="col-md-4">
-			<attribute-view entity="$ctrl.selectedEntity" on-update="$ctrl.updateEntity(entity, attr, value)"></attribute-view>
+		<div class="col-md-4 fix-height-div">
+			<div class="row" id="attribute-view-row">
+				<attribute-view entity="$ctrl.selectedEntity" mode="$ctrl.mode" on-update-entity="$ctrl.updateEntity(entity, attr, value)" on-change-mode="$ctrl.changeMode(mode)"></attribute-view>
+			</div>
+			<div class="row" id="save-buttons-row">
+				<div class="row">
+					<button class="btn btn-primary save-button" ng-click="$ctrl.saveCheckpoints()">保存标注</button>
+				</div>
+				<div class="row">
+					<button class="btn btn-primary save-button" ng-click="$ctrl.saveAndLoadNext()">下一组</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

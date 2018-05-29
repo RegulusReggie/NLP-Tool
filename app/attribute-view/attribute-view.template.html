@@ -1,25 +1,17 @@
 <div class="container-fluid" id="attribute-view">	
 	<div class="row">
 		<div class="col-md-6">
-			<button class="btn btn-primary">Attr Anno</button>
+			<button class="btn btn-primary" ng-click="$ctrl.changeMode('entity')">Attr Anno</button>
 		</div>
 		<div class="col-md-6">
-			<button class="btn btn-primary">Indep Anno</button>
+			<button class="btn btn-primary" ng-click="$ctrl.changeMode('sentence')">Indep Anno</button>
 		</div>
 	</div>
 	<div class="row" ng-class="$ctrl.isHidden()">
-		<div class="btn-group" ng-repeat="(lvl, lvlAttrs) in $ctrl.attrMap">
-			<span>{{lvl}}</span>
+		<div class="btn-group" ng-repeat="(category, categoryAttrs) in $ctrl.attrMap">
+			<span>{{category}}</span>
 			<br/>
-			<button ng-repeat="(buttonValue, buttonText) in lvlAttrs" class="btn btn-default" ng-class="$ctrl.isActiveButton(lvl, buttonValue)" ng-click="$ctrl.update($event, lvl, buttonValue)">{{buttonText}}</button>
-		</div>
-	</div>
-	<div class="row">
-		<div class="row">
-			<button class="btn btn-primary">Save Checkpoints</button>
-		</div>
-		<div class="row">
-			<button class="btn btn-primary">Next</button>
+			<button ng-repeat="(buttonValue, buttonText) in categoryAttrs" class="btn btn-default" ng-class="$ctrl.isActiveButton(category, buttonValue)" ng-click="$ctrl.update($event, category, buttonValue); $ctrl.updateAttrMap(category, buttonValue)">{{buttonText}}</button>
 		</div>
 	</div>
 </div>

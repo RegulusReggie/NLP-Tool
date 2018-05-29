@@ -1,6 +1,6 @@
 // Define common services
 
-var coreModule = angular.module('core')
+var coreModule = angular.module('core');
 
 /*
 =======setActiveBtnInBtnGroup=======
@@ -20,4 +20,4 @@ coreModule.factory('setActiveBtnInBtnGroup', function() {
 			}
 			btnElement.className += " active";	
 		};
-	})
+	});

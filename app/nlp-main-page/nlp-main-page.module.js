@@ -2,5 +2,6 @@
 angular.module('nlpMainPage', [
 	'core.navbar',
 	'core.toolbar',
-	'attributeView'
+	'attributeView',
+	'caseView'
 ]);

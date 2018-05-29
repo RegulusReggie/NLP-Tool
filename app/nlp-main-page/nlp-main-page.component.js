@@ -1,27 +1,52 @@
 // Register 'nlp-main-page' component
+
+const delimiterMap = {
+	'entity': '/',
+	'sentence': '//'
+}
+
 function NlpMainPageController() {
 	var self = this;
-	self.dialog = getDialog()
+
+	self.$onInit = function() {
+		self.dialog = getDialog();
+		self.mode = "entity";
+		self.delimiterMap = delimiterMap;
+		self.case = {};
+	}
+	self.changeMode = function(mode) {
+		if (mode != self.mode)
+			self.clearSelected();
+		self.mode = mode;
+	}
 	self.changeToolState = function(toolState) {
 		self.toolState = toolState;
-		if (toolState == 'empty') {
-			self.selectedEntity = null;
-			self.selectedEntitySentenceIdx = -1;
-		}
+		if (toolState == 'empty')
+			self.clearSelected();
 	}
+	self.clearSelected = function() {
+		self.selectedEntity = null;
+		self.selectedEntityTextIdx = -1;
+	}
+
+	/*** Entity annotation and manipulation functions ***/
 	self.updateEntity = function(entity, attr, value) {
+		if (entity.attributes[attr] == value) return;
 		entity.attributes[attr] = value;
+		if (self.mode == 'entity' && attr == 'attr_level1')
+			entity.attributes['attr_level2'] = null;
 	}
-	self.selectEntity = function(entity, sentenceIdx) {
-		if (self.toolState != 'select-word') return;
+	self.selectEntity = function(entity, textIdx) {
+		// TODO: add shift multi select
+		if (self.toolState != 'select') return;
 		self.selectedEntity = entity;
-		self.selectedEntitySentenceIdx = sentenceIdx;
+		self.selectedEntityTextIdx = textIdx;
 	}
-	self.annotateEntity = function(sentenceIdx) {
-		if (self.toolState != 'annotate-word') return;
+	self.annotate = function(textIdx) {
+		if (self.toolState != 'annotate') return;
 		var sel = window.getSelection();
 		if (isValidSelection(sel)) {
-			var entities = self.dialog[sentenceIdx].entities;
+			var entities = self.dialog[textIdx][self.mode].entities;
 			var range = sel.getRangeAt(0);
 			var startEntityIdx
 				= parseInt(range.startContainer.parentElement.getAttribute('entity-idx'), 10);
@@ -33,7 +58,7 @@ function NlpMainPageController() {
 			// process end delimiter only because we have (delimiter_i, text_i) structure 
 			// selection ends at the right side of the delimiter
 			if (range.endContainer.parentElement.hasAttribute('delimiter')) {
-				if (endOffset == 1) {
+				if (endOffset >= 1) {
 					endEntityIdx -= 1;
 					// the selection ends on the first delimit: nothing selected
 					if (endEntityIdx < 0) return;
@@ -68,6 +93,7 @@ function NlpMainPageController() {
 					attributes: {}
 				});
 			}
+
 			/* remove old entities and add new entities */
 			entities.splice(insertIdx, deleteIdx - insertIdx);
 			for (var i = newEntities.length - 1; i >= 0; i--)
@@ -75,9 +101,66 @@ function NlpMainPageController() {
 			self.selectedEntity = newSelectedEntity;
 		}
 	}
+
+	self.delete = function() {
+		self.selectedEntity.attributes = {};
+	}
+
+	/*** case attributes functions ***/
+	self.updateCase = function(attr, value) {
+		if (attr == "conclusions") {
+			if (!self.case[attr])
+				self.case[attr] = new Set();
+			// TODO: rewrite 0 to some constant
+			if (value == "0") {
+				self.case[attr].clear();
+				self.case[attr].add(value);
+			} else if (self.case[attr].has(value))
+				self.case[attr].delete(value);
+			else {
+				self.case[attr].add(value);
+				self.case[attr].delete("0");
+			}
+		} else
+			self.case[attr] = value;
+	}
+
+	/*** Output functions ***/
+	self.saveCheckpoints = function() {
+		if (self.checkOutputValidity()) {
+
+		} else {
+
+		}
+	}
+
+	self.checkOutputValidity = function() {
+		return true;
+	}
+
+	self.toJSON = function() {
+		/* every text has one json
+			{
+				tag: from html
+				org_context: from original split
+				rev_context: from new split
+				sen_label: from new sentence split
+				entity: [
+					("entityText", type e.g. 1-1 2-3, position: start, value: matching text value)
+				]
+				sentences: [
+					(type e.g. 1-1 2-3, position: start, value: matching text value)
+					consider change
+				]
+			}
+		*/
+		return {}
+	}
+
+	/*** deprecated functions, kept for future use ***/
 	self.deleteSelectedEntity = function() {
-		if (self.selectedEntity && self.selectedEntitySentenceIdx != -1) {
-			var entities = self.dialog[self.selectedEntitySentenceIdx].entities;
+		if (self.selectedEntity && self.selectedEntityTextIdx != -1) {
+			var entities = self.dialog[self.selectedEntityTextIdx].entities;
 			var selEntityIdx = entities.indexOf(self.selectedEntity);
 			if (selEntityIdx == -1) return;
 			if (selEntityIdx > 0) {
@@ -91,7 +174,7 @@ function NlpMainPageController() {
 			}
 			self.selectedEntity.attributes = {};
 			self.selectedEntity = null;
-			self.selectedEntitySentenceIdx = -1;
+			self.selectedEntityTextIdx = -1;
 		}
 	}
 }
@@ -99,59 +182,51 @@ function NlpMainPageController() {
 // for dev only, change it to service later
 // begin
 function getDialog() {
-	var text1 = '我是一句非常长的话你要好好对我。';
-	var text2 = '为什么你是一句很长的话呢，我看不懂。';
-	var text3 = '看不懂就对了因为我是医生，我写的字都很长。';
-	return [
-		{
-			speaker: '医生',
-			text: text1, 
-			entities: [
-				{
-					start: 0,
-					end: 1,
-					attributes: {}
-				},
-				{
-					start: 1,
-					end: 3,
-					attributes: {}
-				},
-				{
-					start: 3,
-					end: text1.length,
-					attributes: {}
-				},
-			],
+	var texts = [
+		'医生：我是一句非常长的话你要好好对我。',
+		'患者：为什么你是一句很长的话呢，我看不懂。',
+		'医生：看不懂就对了因为我是医生，我写的字都很长。'
+	];
+	return texts.map(text => {
+		var textInfo = {
+			speaker: text.split('：')[0],
+			entity: {
+				text: text.split('：')[1]
+			},
+			sentence: {
+				entities: []
+			},
 			show: true
-		},
-		{
-			speaker: '患者',
-			text: text2, 
-			entities: [
-				{
-					start: 0,
-					end: text2.length,
-					attributes: {}
-				}
-			],
-			show: true
-		},
-		{
-			speaker: '医生',
-			text: text3,
-			entities: [
-				{
-					start: 0,
-					end: text3.length,
-					attributes: {}
-				}
-			],
-			show: true
+		};
+		textInfo.entity.entities = [{
+			start: 0,
+			end: textInfo.entity.text.length,
+			attributes: {}
+		}];
+		textInfo.sentence.text = textInfo.entity.text.replace(/。|，|？/g, "");
+		var textAsSentence = textInfo.entity.text.replace(/。|，|？/g, "//");
+		var sentences = textAsSentence.split('//');
+		// when the sentence ends on a delimiter
+		if (!sentences[sentences.length - 1])
+			sentences.splice(sentences.length - 1, 1);
+		var offset = 0;
+		for (var i = 0; i < sentences.length; i++) {
+			textInfo.sentence.entities.push({
+				start: offset,
+				end: offset + sentences[i].length,
+				attributes: {}
+			});
+			offset += sentences[i].length;
 		}
-	]	
+		return textInfo;
+	});
+}
+
+function autoMatch() {
+	// auto match selected entity with entities in DB
 }
 // end
+
 
 function isValidSelection(sel) {
 	var anchorParentEle = sel.anchorNode.parentElement;

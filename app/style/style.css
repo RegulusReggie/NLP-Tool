@@ -14,17 +14,50 @@
 	height: 70%;
 }
 
-#comment-row {
+#case-row {
 	height: 30%;
 }
 
 #toolbar {
-	padding-right: 50px;
+	padding-right: 30px;
+	padding-left: 10px
 }
 
 .btn-group .active, .btn-group .btn:hover {
 	background-color: yellow;
 	color: white;
+}
+
+/* editable button css */
+.editable-btn:hover {
+	background-color: white !important;
+	color: black !important;
+	cursor: auto;
+}
+
+.editable-btn {
+	background-color: cyan;
+}
+
+.editable-btn {
+	position: relative;
+	margin: 0px 5px 0px 5px;	
+}
+
+.editable-btn .editable-btn-checkmark {
+	position: absolute;
+	top: -8px;
+	right: 5px;
+}
+
+.editable-btn .editable-btn-cross {
+	position: absolute;
+	bottom: -8px;
+	right: 5px;"
+}
+
+.editable-btn .editable-btn-checkmark:hover, .editable-btn .editable-btn-cross:hover {
+	cursor: pointer;
 }
 
 /*dialog table style*/
@@ -61,4 +94,35 @@
 
 #dialog-table .selected {
 	color: white;
+}
+
+#dialog-table .question-sentence {
+	text-decoration: underline red;
+}
+
+#dialog-table .affirmative-sentence {
+	text-decoration: underline green;
+}
+
+#dialog-table .negative-sentence {
+	text-decoration: underline blue;
+}
+
+#attribute-view-row {
+	padding-left: 50px;
+	height: 70%;
+}
+
+#save-buttons-row {
+	padding-left: 50px;
+	height: 30%;
+}
+
+.save-button {
+	width: 90%;
+	margin: 5px 0;
+}
+
+.fix-height-div {
+	 display: block; height: 85vh
 }

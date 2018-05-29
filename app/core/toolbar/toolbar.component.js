@@ -1,12 +1,40 @@
 // Register 'toolbar' component
 const toolMap = {
-	'annotate-word': 'AW',
-	'select-word': 'SW'
+	'entity': {
+		'annotate': 'AW',
+		'select': 'SW'
+	},
+	'sentence': {
+		'annotate': 'AS',
+		'select': 'SS'
+	}
 }
 
 function ToolbarController(setActiveBtnInBtnGroup) {
 	var self = this;
-	self.toolMap = toolMap;
+	self.$onChanges = function(changesObj) {
+		// on mode change, reset the tool state
+		if (changesObj.mode && changesObj.mode.currentValue != changesObj.mode.previousValue) {
+			self.toolMap = toolMap[self.mode];
+			self.onUpdate({toolState: "empty"});
+			var buttons = document
+				.getElementById("toolbar")
+				.getElementsByTagName("button");
+			for (var idx in buttons) {
+				var button = buttons[idx];
+				if (button.classList && button.classList.contains("active")) {
+					button.className = button.className.replace(" active", "");
+				}
+					
+			}	
+		}
+		
+	}
+
+	self.$onInit = function() {
+		self.toolMap = toolMap[self.mode];	
+	}
+	
 	self.changeTool = function($event, toolKey) {
 		var btnElement = $event.currentTarget
 		if (btnElement.classList.contains("active")) {
@@ -28,6 +56,7 @@ angular.
 		templateUrl: 'core/toolbar/toolbar.template.html',
 		controller: ['setActiveBtnInBtnGroup', ToolbarController],
 		bindings: {
+			mode: '<',
 			onUpdate: '&',
 			onDelete: '&'
 		}

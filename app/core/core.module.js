@@ -2,5 +2,6 @@
 angular.module('core', [
 	'core.userauth',
 	'core.navbar',
-	'core.toolbar'
+	'core.toolbar',
+	'core.editable-btn'
 ]);

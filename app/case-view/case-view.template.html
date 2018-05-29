@@ -1,0 +1,14 @@
+<h4>案例标注</h4>
+<div class="btn-group row">
+	<span>案例结论(可多选)</span>
+	<br/>
+	<button ng-repeat="(conKey, conValue) in $ctrl.conclusionsMap" class="btn btn-default" ng-class="$ctrl.case['conclusions'].has(conKey) ? 'active' : ''" ng-click="$ctrl.update('conclusions', conKey)">{{conValue}}</button>
+	<button class="btn btn-default" ng-click="$ctrl.addEditableBtn($event)">+</button>
+</div>
+<br/>
+<div class="btn-group row">
+	<span>多次问诊</span>
+	<br/>
+	<button class="btn btn-default" ng-class="$ctrl.case['multi-inquiry'] == 'yes' ? 'active' : ''" ng-click="$ctrl.update('multi-inquiry', 'yes')">是</button>
+	<button class="btn btn-default" ng-class="$ctrl.case['multi-inquiry'] == 'no' ? 'active' : ''" ng-click="$ctrl.update('multi-inquiry', 'no')">否</button>
+</div>
