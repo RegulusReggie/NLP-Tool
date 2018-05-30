@@ -16,7 +16,7 @@
 												 entity-idx="{{$index}}"
 											 	 delimiter>{{$ctrl.delimiterMap[$ctrl.mode]}}</span><span 
 												 ng-repeat-end
-												 ng-click="$ctrl.selectEntity(entity, $parent.$index)"
+												 ng-click="$ctrl.selectEntity(entity, $parent.$index, $event)"
 												 entity-idx="{{$index}}"
 												 ng-class="{
 													'disease-entity': entity.attributes.attr_level1 == 1,
@@ -25,7 +25,8 @@
 													'question-sentence': entity.attributes.logic_type == 1,
 													'affirmative-sentence': entity.attributes.logic_type == 2,
 													'negative-sentence': entity.attributes.logic_type == 3,
-													'selected': $ctrl.selectedEntity == entity}"
+													'selected': $ctrl.selectedEntity.contains(entity)
+													}"
 													>{{chatText[$ctrl.mode].text.substring(entity.start, entity.end)}}</span><span
 												 entity-idx="{{chatText[$ctrl.mode].entities.length}}"
 												 delimiter>{{$ctrl.delimiterMap[$ctrl.mode]}}</span>
@@ -42,7 +43,7 @@
 		</div>
 		<div class="col-md-4 fix-height-div">
 			<div class="row" id="attribute-view-row">
-				<attribute-view entity="$ctrl.selectedEntity" mode="$ctrl.mode" on-update-entity="$ctrl.updateEntity(entity, attr, value)" on-change-mode="$ctrl.changeMode(mode)"></attribute-view>
+				<attribute-view entities="$ctrl.selectedEntity" mode="$ctrl.mode" on-update-entity="$ctrl.updateEntity(entitySet, attr, value)" on-change-mode="$ctrl.changeMode(mode)"></attribute-view>
 			</div>
 			<div class="row" id="save-buttons-row">
 				<div class="row">

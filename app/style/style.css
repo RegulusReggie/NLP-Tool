@@ -28,6 +28,11 @@
 	color: white;
 }
 
+.btn-group .semi-active {
+	background-color: pink;
+	color: white;
+}
+
 /* editable button css */
 .editable-btn:hover {
 	background-color: white !important;

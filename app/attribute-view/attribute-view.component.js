@@ -53,13 +53,13 @@ const attrMap = {
 	}
 }
 
-function AttributeViewController(setActiveBtnInBtnGroup) {
+function AttributeViewController(setActiveBtnInBtnGroup, EntitySet) {
 	var self = this;
 
 	self.$onChanges = function(changesObj) {
 		if (changesObj.mode) {
 			self.setAttrMap(changesObj.mode.currentValue);
-		} else if (changesObj.entity) {
+		} else if (changesObj.entities) {
 			self.setAttrMap(self.mode);
 		}
 	}
@@ -67,7 +67,7 @@ function AttributeViewController(setActiveBtnInBtnGroup) {
 	// output functions
 	self.update = function($event, attr, value) {
 		setActiveBtnInBtnGroup($event.currentTarget);
-		self.onUpdateEntity({entity: self.entity, attr: attr, value: value});	
+		self.onUpdateEntity({entitySet: self.entities, attr: attr, value: value});	
 	}
 	self.changeMode = function(mode) {
 		self.onChangeMode({mode: mode});
@@ -94,17 +94,17 @@ function AttributeViewController(setActiveBtnInBtnGroup) {
 
 	// css functions
 	self.isActiveButton = function(attr, value) {
-		return self.entity 
-			&& self.entity.attributes
-			&& self.entity.attributes[attr] == value
-			? "active"
-			: ""
+		if (!self.entities || !self.entities.size()) return "";
+		var numMatch = self.entities.numAttrMatch(attr, value);
+		if (numMatch == self.entities.size())
+			return "active";
+		else if (numMatch == 0)
+			return "";
+		return "semi-active";
 	}
 	self.isHidden = function() {
-		return self.entity
-			&& self.entity.attributes
-			? ""
-			: "hidden"
+		if (!self.entities || !self.entities.size()) return "hidden";
+		return "";
 	}
 }
 
@@ -112,10 +112,10 @@ angular.
 	module('attributeView').
 	component('attributeView', {
 		templateUrl: 'attribute-view/attribute-view.template.html',
-		controller: ['setActiveBtnInBtnGroup', AttributeViewController],
+		controller: ['setActiveBtnInBtnGroup', 'EntitySet', AttributeViewController],
 		bindings: {
 			mode: '<',
-			entity: '<',
+			entities: '<',
 			onUpdateEntity: '&',
 			onChangeMode: '&'
 		}

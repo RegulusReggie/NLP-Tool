@@ -5,7 +5,7 @@ const delimiterMap = {
 	'sentence': '//'
 }
 
-function NlpMainPageController() {
+function NlpMainPageController(EntitySet) {
 	var self = this;
 
 	self.$onInit = function() {
@@ -13,34 +13,36 @@ function NlpMainPageController() {
 		self.mode = "entity";
 		self.delimiterMap = delimiterMap;
 		self.case = {};
+		self.selectedEntity = new EntitySet();
 	}
 	self.changeMode = function(mode) {
 		if (mode != self.mode)
-			self.clearSelected();
+			self.selectEntity.clear();
 		self.mode = mode;
 	}
 	self.changeToolState = function(toolState) {
+		if (toolState == 'empty' || toolState != self.toolState)
+			self.selectedEntity.clear();
 		self.toolState = toolState;
-		if (toolState == 'empty')
-			self.clearSelected();
-	}
-	self.clearSelected = function() {
-		self.selectedEntity = null;
-		self.selectedEntityTextIdx = -1;
 	}
 
 	/*** Entity annotation and manipulation functions ***/
-	self.updateEntity = function(entity, attr, value) {
-		if (entity.attributes[attr] == value) return;
-		entity.attributes[attr] = value;
-		if (self.mode == 'entity' && attr == 'attr_level1')
-			entity.attributes['attr_level2'] = null;
+	self.updateEntity = function(entitySet, attr, value) {
+		entitySet.update(attr, value);
 	}
-	self.selectEntity = function(entity, textIdx) {
-		// TODO: add shift multi select
+	self.selectEntity = function(entity, textIdx, $event) {
+		console.log(entity);
 		if (self.toolState != 'select') return;
-		self.selectedEntity = entity;
-		self.selectedEntityTextIdx = textIdx;
+		if (!$event.shiftKey) {
+			self.selectedEntity.clear();
+			self.selectedEntity.add(entity);
+		} else {
+			window.getSelection().removeAllRanges();
+			if (self.selectedEntity.contains(entity))
+				self.selectedEntity.remove(entity);
+			else
+				self.selectedEntity.add(entity);
+		}
 	}
 	self.annotate = function(textIdx) {
 		if (self.toolState != 'annotate') return;
@@ -98,12 +100,14 @@ function NlpMainPageController() {
 			entities.splice(insertIdx, deleteIdx - insertIdx);
 			for (var i = newEntities.length - 1; i >= 0; i--)
 				entities.splice(insertIdx, 0, newEntities[i]);
-			self.selectedEntity = newSelectedEntity;
+
+			self.selectedEntity.clear();
+			self.selectedEntity.add(newSelectedEntity);
 		}
 	}
 
 	self.delete = function() {
-		self.selectedEntity.attributes = {};
+		self.selectedEntity.deleteAttributes();
 	}
 
 	/*** case attributes functions ***/
@@ -248,5 +252,5 @@ angular.
 	module('nlpMainPage').
 	component('nlpMainPage', {
 		templateUrl: 'nlp-main-page/nlp-main-page.template.html',
-		controller: NlpMainPageController
+		controller: ['EntitySet', NlpMainPageController]
 	})
